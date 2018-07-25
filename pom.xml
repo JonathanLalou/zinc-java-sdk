@@ -9,7 +9,7 @@
 
     <groupId>fr.sayasoft</groupId>
     <artifactId>zinc-java-sdk</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
     <name>zinc-java-sdk</name>
     <url>https://github.com/JonathanLalou/zinc-java-sdk</url>
@@ -22,7 +22,7 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <downloadSources>false</downloadSources>
+        <downloadSources>true</downloadSources>
         <log4j.version>1.2.16</log4j.version>
         <commons-codec.version>1.10</commons-codec.version>
         <commons-lang.version>2.5</commons-lang.version>
