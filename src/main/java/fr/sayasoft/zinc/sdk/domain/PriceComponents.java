@@ -19,23 +19,23 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PriceComponents implements Serializable {
-    @SerializedName("shipping")
-    @JsonProperty("shipping")
+    @SerializedName(ZincConstants.shipping)
+    @JsonProperty(ZincConstants.shipping)
     private Integer shipping;
 
-    @SerializedName("subtotals")
-    @JsonProperty("subtotals")
+    @SerializedName(ZincConstants.subtotal)
+    @JsonProperty(ZincConstants.subtotal)
     private Integer subtotal;
 
-    @SerializedName("tax")
-    @JsonProperty("tax")
+    @SerializedName(ZincConstants.tax)
+    @JsonProperty(ZincConstants.tax)
     private Integer tax;
 
-    @SerializedName("total")
-    @JsonProperty("total")
+    @SerializedName(ZincConstants.total)
+    @JsonProperty(ZincConstants.total)
     private Integer total;
 
-    @SerializedName("product_subtotals")
-    @JsonProperty("product_subtotals")
+    @SerializedName(ZincConstants.product_subtotals)
+    @JsonProperty(ZincConstants.product_subtotals)
     private Map<String, Integer> productSubtotals;
 }

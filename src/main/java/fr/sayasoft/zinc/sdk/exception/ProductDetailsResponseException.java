@@ -4,10 +4,10 @@ import fr.sayasoft.zinc.sdk.domain.ZincError;
 import lombok.Data;
 
 @Data
-public class OrderResponseException extends CannotGetOrderException {
+public class ProductDetailsResponseException extends CannotGetProductDetailsException {
     private final ZincError zincError;
 
-    public OrderResponseException(ZincError zincError) {
+    public ProductDetailsResponseException(ZincError zincError) {
         super();
         this.zincError = zincError;
     }

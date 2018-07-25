@@ -9,6 +9,8 @@ import lombok.ToString;
 @Getter
 @ToString
 public enum ZincErrorCode {
+    account_locked("The retailer asked for additional information to verify your account."),
+    account_locked_verification_required("The retailer emailed you a code which you must supply to continue ordering."),
     account_login_failed("We were unable to log in to the retailer with the username and password you provided."),
     add_on_item("Add-on items cannot be ordered individually."),
     additional_information_required("The retailer asked for additional account verification questions. If using the API, please add a field â€˜phone_numberâ€™ in the billing address that matches your billing telephone number."),

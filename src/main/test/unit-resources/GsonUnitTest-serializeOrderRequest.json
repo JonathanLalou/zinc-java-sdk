@@ -1,0 +1,48 @@
+{
+  "idempotency_key": "myIdempotencyKey",
+  "retailer": "amazon",
+  "products": [
+    {
+      "product_id": "0923568964",
+      "quantity": 1
+    }
+  ],
+  "max_price": 0,
+  "shipping_address": {
+    "first_name": "John Hannibal",
+    "last_name": "Smith",
+    "address_line1": "1234 Main Street",
+    "address_line2": "above the bar",
+    "zip_code": "11907",
+    "city": "Brooklyn",
+    "state": "NY",
+    "country": "US",
+    "phone_number": "123-123-1234"
+  },
+  "is_gift": true,
+  "gift_message": "Here is your package",
+  "shipping_method": "cheapest",
+  "billing_address": {
+    "first_name": "John Hannibal",
+    "last_name": "Smith",
+    "address_line1": "1234 Main Street",
+    "address_line2": "above the bar",
+    "zip_code": "11907",
+    "city": "Brooklyn",
+    "state": "NY",
+    "country": "US",
+    "phone_number": "123-123-1234"
+  },
+  "payment_method": {
+    "name_on_card": "SAS SayaSoft",
+    "number": "0000000000000000",
+    "security_code": "000",
+    "expiration_month": 12,
+    "expiration_year": 2020,
+    "use_gift": false
+  },
+  "retailer_credentials": {
+    "email": "test@test.fr",
+    "password": "password"
+  }
+}

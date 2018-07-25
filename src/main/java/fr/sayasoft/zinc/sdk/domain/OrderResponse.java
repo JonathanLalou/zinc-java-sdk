@@ -46,7 +46,7 @@ public class OrderResponse implements Serializable {
   ]
 }
     */
-//    @SerializedName(ZincConstants.type)
+//    @SerializedName(ZincConstants._type)
 //    private String type;
     @SerializedName("price_components")
     @JsonProperty("price_components")

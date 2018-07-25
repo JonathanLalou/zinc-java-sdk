@@ -1,0 +1,33 @@
+{
+  "_type": "error",
+  "request": {
+    "idempotency_key": "Torcularis Septentrionalis Omicron Piscium",
+    "retailer": "amazon",
+    "products": [
+      {
+        "product_id": "Sheddi-Delta Capricorni",
+        "quantity": 159
+      }
+    ],
+    "max_price": 0,
+    "shipping": {
+      "order_by": "fasted",
+      "maxDays": 21,
+      "maxPrice": 6543
+    },
+    "webhooks": {}
+  },
+  "code": "invalid_payment_method",
+  "message": "Sualocin-Alpha Delphini",
+  "data": {"Rasalas": "Mu Leonis"},
+  "_created_at": "2017-09-17T16:05:48.250Z",
+  "status_updates": [
+    {
+      "type": "statusUpdated",
+      "data": {
+        "hello": "world"
+      },
+      "_created_at": "2017-09-17T16:08:54.250Z"
+    }
+  ]
+}

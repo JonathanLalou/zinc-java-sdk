@@ -135,17 +135,18 @@ class ZincApiUnitTest {
                 orderRequest: orderRequest,
                 code: ZincErrorCode.invalid_payment_method,
                 message: "Sualocin-Alpha Delphini",
-                data: "{Rasalas: Mu Leonis}",
+                data: ["Rasalas": "Mu Leonis"],
                 createdAt: Date.parse(ZincConstants.jsonDateFormat, "2017-09-17T16:05:48.250Z"),
-                statusUpdates: [new ZincStatusUpdate(type: "statusUpdated", data: [hello: "world"], createdAt: Date.parse(ZincConstants.jsonDateFormat, "2017-09-17T16:08:54.250Z"))]
+                statusUpdates: [new ZincStatusUpdate(type: "status_updated", data: [hello: "world"], createdAt: Date.parse(ZincConstants.jsonDateFormat, "2017-09-17T16:08:54.250Z"))]
         )
         def expectedJson = "{" +
                 "\"_type\":\"error\"," +
                 "\"request\":$data," +
                 "\"code\":\"invalid_payment_method\"," +
                 "\"message\":\"Sualocin-Alpha Delphini\"," +
-                "\"data\":\"{Rasalas: Mu Leonis}\",\"_created_at\":\"2017-09-17T16:05:48.250Z\"," +
-                "\"status_updates\":[{\"type\":\"statusUpdated\",\"data\":{\"hello\":\"world\"},\"_created_at\":\"2017-09-17T16:08:54.250Z\"}]" +
+                "\"data\":{\"Rasalas\": \"Mu Leonis\"}," +
+                "\"_created_at\":\"2017-09-17T16:05:48.250Z\"," +
+                "\"status_updates\":[{\"type\":\"status_updated\",\"data\":{\"hello\":\"world\"},\"_created_at\":\"2017-09-17T16:08:54.250Z\"}]" +
                 "}"
 
         entity = new HttpEntity<>(data, headers);

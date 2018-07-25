@@ -5,6 +5,8 @@ import fr.sayasoft.zinc.sdk.domain.OrderRequest
 import fr.sayasoft.zinc.sdk.domain.OrderResponse
 import fr.sayasoft.zinc.sdk.domain.PaymentMethod
 import fr.sayasoft.zinc.sdk.domain.Product
+import fr.sayasoft.zinc.sdk.domain.ProductDetailsResponse
+import fr.sayasoft.zinc.sdk.domain.ProductOfferResponse
 import fr.sayasoft.zinc.sdk.domain.RetailerCredentials
 import fr.sayasoft.zinc.sdk.domain.ZincAddress
 import fr.sayasoft.zinc.sdk.domain.ZincError
@@ -19,10 +21,11 @@ import org.apache.commons.collections4.keyvalue.DefaultMapEntry
 import org.junit.Before
 import org.junit.Test
 
+import static fr.sayasoft.zinc.sdk.api.ZincHelper.encodeToken
 import static fr.sayasoft.zinc.sdk.enums.ZincErrorCode.expired_product_id
-import static fr.sayasoft.zinc.sdk.enums.ZincWebhookType.requestFailed
-import static fr.sayasoft.zinc.sdk.enums.ZincWebhookType.requestSucceeded
-import static fr.sayasoft.zinc.sdk.enums.ZincWebhookType.statusUpdated
+import static fr.sayasoft.zinc.sdk.enums.ZincWebhookType.request_failed
+import static fr.sayasoft.zinc.sdk.enums.ZincWebhookType.request_succeeded
+import static fr.sayasoft.zinc.sdk.enums.ZincWebhookType.status_updated
 import static org.junit.Assert.fail
 
 class ZincApiRuntimeTest {
@@ -72,14 +75,10 @@ class ZincApiRuntimeTest {
                 PaymentMethod.builder()
                 // fake card id was generated on http://credit-card-generator.2-ee.com/
                         .nameOnCard("Hello World")
-                // TODO
-                        .number("1234123412341234")
-                // TODO
-                        .securityCode("123")
-                // TODO
-                        .expirationMonth(12)
-                // TODO
-                        .expirationYear(2020)
+                        .number("4916831307592488")
+                        .securityCode("258")
+                        .expirationMonth(06)
+                        .expirationYear(2019)
                         .useGift(false)
                         .build()
         )
@@ -88,15 +87,9 @@ class ZincApiRuntimeTest {
                 .maxPrice(12345) // TODO
                 .giftMessage("Here is your package") // TODO
                 .isGift(true)
-                .webhooks(
-                MapUtils.putAll(
-                        new HashMap(),
-                        [
-                                new DefaultMapEntry(requestSucceeded, "http://localhost:9090/webhook/requestSucceeded/abcdefghij"),
-                                new DefaultMapEntry(requestFailed, "http://localhost:9090/webhook/requestFailed/abcdefghij"),
-                                new DefaultMapEntry(statusUpdated, "http://localhost:9090/webhook/statusUpdated/abcdefghij")
-                        ]
-                ))
+                .webhooks(MapUtils.putAll(new HashMap(), [new DefaultMapEntry(request_succeeded, "http://localhost:8080/hook/zinc?eventType=request_succeeded&uuid=abcdefghij"),
+                                                          new DefaultMapEntry(request_failed, "http://localhost:8080/hook/zinc?eventType=request_failed&uuid=abcdefghij"),
+                                                          new DefaultMapEntry(status_updated, "http://localhost:8080/hook/zinc?eventType=status_updated&uuid=abcdefghij")]))
                 .build()
     }
 
@@ -116,7 +109,7 @@ class ZincApiRuntimeTest {
     @Test
     void 'getOrder with max_price_exceeded'() {
         try {
-            zincApi.getOrder("7387cfa103883c0eb517af0")
+            zincApi.getOrder("7387cfa103883c0eb517af09602bfa74")
             fail()
         } catch (OrderResponseException e) {
             assert ZincErrorCode.max_price_exceeded == e.zincError.code
@@ -127,7 +120,7 @@ class ZincApiRuntimeTest {
 
     @Test
     void 'getOrder with success'() {
-        assert zincApi.getOrder("efe953f5a") instanceof OrderResponse
+        assert zincApi.getOrder("8f32fb635f9a9b01a9ff7d0efe953f5a") instanceof OrderResponse
     }
 
     @Test
@@ -151,6 +144,26 @@ class ZincApiRuntimeTest {
         //noinspection GroovyVariableNotAssigned
         assert expired_product_id == zincError.code
         assert expired_product_id.meaning == zincError.code.meaning
-        assert "{'fakeField': '$myIdempotencyKey '}" == zincError.data
+        assert ["fakeField": "$myIdempotencyKey"] == zincError.data
+    }
+
+    @Test
+    void 'generate base64-encoded token'() {
+        def token = "ABCDEFGH"
+        println encodeToken(token)
+    }
+
+    @Test
+    void 'getProductOffer with success'() {
+        def actual = zincApi.getProductOffer(SupportedRetailer.amazon, "xxxxxxxxx", null, null, null)
+        println actual
+        assert actual instanceof ProductOfferResponse
+    }
+
+    @Test
+    void 'getProductDetails with success'() {
+        def actual = zincApi.getProductDetails(SupportedRetailer.amazon, "xxxxxxxxx", null, null, null)
+        println actual
+        assert actual instanceof ProductDetailsResponse
     }
 }

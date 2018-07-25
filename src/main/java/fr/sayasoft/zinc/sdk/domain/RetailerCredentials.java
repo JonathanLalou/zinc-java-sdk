@@ -25,4 +25,10 @@ public class RetailerCredentials implements Serializable {
     @SerializedName(ZincConstants.password)
     @JsonProperty(ZincConstants.password)
     private String password;
+
+    /** (Optional) The verification code required by the retailer for logging in. Only required in cases where the retailer prevents a login with an account_locked_verification_required error code.
+     * cf. http://docs.zincapi.com/#amazon-email-verification*/
+    @SerializedName(ZincConstants.verificationCode)
+    @JsonProperty(ZincConstants.verificationCode)
+    private String verificationCode;
 }

@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.7.RELEASE</version>
+        <version>1.5.14.RELEASE</version>
     </parent>
 
     <groupId>fr.sayasoft</groupId>
@@ -22,7 +22,7 @@
         </license>
     </licenses>
     <properties>
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <downloadSources>true</downloadSources>
         <log4j.version>1.2.16</log4j.version>
@@ -110,7 +110,6 @@
             <scope>test</scope>
         </dependency>
 
-
     </dependencies>
     <description>Zinc Java Bindings</description>
     <organization>
@@ -124,6 +123,14 @@
     </scm>
     <build>
         <testSourceDirectory>src/main/test/unit</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>src/main/test/unit-resources</directory>
+                <includes>
+                    <include>**/*.json</include>
+                </includes>
+            </testResource>
+        </testResources>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -197,5 +204,4 @@
             </plugin>
         </plugins>
     </build>
-    
 </project>

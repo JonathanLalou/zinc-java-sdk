@@ -7,26 +7,25 @@ import fr.sayasoft.zinc.sdk.enums.ZincErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Builder;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created on 31/07/2017.
  */
 @ToString
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ZincError implements Serializable {
-    @SerializedName(ZincConstants.type)
-    @JsonProperty(ZincConstants.type)
+    @SerializedName(ZincConstants._type)
+    @JsonProperty(ZincConstants._type)
     private String type = ZincConstants.error;
 
     @SerializedName(ZincConstants.request)
@@ -41,12 +40,13 @@ public class ZincError implements Serializable {
     @JsonProperty(ZincConstants.message)
     private String message;
 
+    @SuppressWarnings({"squid:S1948", "squid:S1165"})
     @SerializedName(ZincConstants.data)
     @JsonProperty(ZincConstants.data)
-    private String data;
+    private Map<String, ?> data;
 
-    @SerializedName("host")
-    @JsonProperty("host")
+    @SerializedName(ZincConstants.host)
+    @JsonProperty(ZincConstants.host)
     private String host;
 
     @SerializedName(ZincConstants.createdAt)

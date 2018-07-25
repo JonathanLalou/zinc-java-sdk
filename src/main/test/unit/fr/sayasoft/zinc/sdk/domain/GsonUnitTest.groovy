@@ -5,111 +5,102 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import fr.sayasoft.zinc.sdk.enums.ShippingMethod
 import fr.sayasoft.zinc.sdk.enums.SupportedRetailer
+import fr.sayasoft.zinc.sdk.enums.ZincCondition
 import fr.sayasoft.zinc.sdk.enums.ZincErrorCode
+import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.builder.ToStringBuilder
 import org.apache.commons.lang3.builder.ToStringStyle
-import org.junit.Ignore
 import org.junit.Test
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 class GsonUnitTest {
+    def orderRequest = OrderRequest.builder()
+            .idempotencyKey("myIdempotencyKey")
+            .retailer("amazon")
+            .products(Lists.newArrayList(new Product("0923568964")))
+            .shippingAddress(
+            ZincAddress.builder()
+                    .firstName("John Hannibal")
+                    .lastName("Smith")
+                    .addressLine1("1234 Main Street")
+                    .addressLine2("above the bar")
+                    .zipCode("11907")
+                    .city("Brooklyn")
+                    .state("NY")
+                    .country("US")
+                    .phoneNumber("123-123-1234")
+                    .build()
+    ).shippingMethod(ShippingMethod.cheapest) // TODO
+            .billingAddress( // TODO parametrize
+            ZincAddress.builder()
+                    .firstName("John Hannibal")
+                    .lastName("Smith")
+                    .addressLine1("1234 Main Street")
+                    .addressLine2("above the bar")
+                    .zipCode("11907")
+                    .city("Brooklyn")
+                    .state("NY")
+                    .country("US")
+                    .phoneNumber("123-123-1234")
+                    .build()
+    )
+            .paymentMethod(
+            PaymentMethod.builder()
+                    .nameOnCard("SAS SayaSoft")
+                    .number("0000000000000000")
+                    .securityCode("000")
+                    .expirationMonth(12)
+                    .expirationYear(2020)
+                    .useGift(false)
+                    .build()
+    )
+            .retailerCredentials(new RetailerCredentials(email: "test@test.fr", password: "password")) // TODO
+            .maxPrice(0) // TODO
+            .giftMessage("Here is your package") // TODO
+            .isGift(true)
+            .build()
+
     @Test
-    @Ignore
     void 'serialize OrderRequest'() {
-        def orderRequest = OrderRequest.builder()
-                .idempotencyKey("myIdempotencyKey")
-                .retailer("amazon")
-                .products(Lists.newArrayList(new Product("0923568964")))
-                .shippingAddress(
-                ZincAddress.builder()
-                        .firstName("John Hannibal")
-                        .lastName("Smith")
-                        .addressLine1("1234 Main Street")
-                        .addressLine2("above the bar")
-                        .zipCode("11907")
-                        .city("Brooklyn")
-                        .state("NY")
-                        .country("US")
-                        .phoneNumber("123-123-1234")
-                        .build()
-        ).shippingMethod(ShippingMethod.cheapest) // TODO
-                .billingAddress( // TODO parametrize
-                ZincAddress.builder()
-                        .firstName("John Hannibal")
-                        .lastName("Smith")
-                        .addressLine1("1234 Main Street")
-                        .addressLine2("above the bar")
-                        .zipCode("11907")
-                        .city("Brooklyn")
-                        .state("NY")
-                        .country("US")
-                        .phoneNumber("123-123-1234")
-                        .build()
-        )
-                .paymentMethod(
-                PaymentMethod.builder()
-                        .nameOnCard("SAS SayaSoft")
-                        .number("0000000000000000")
-                        .securityCode("000")
-                        .expirationMonth(12)
-                        .expirationYear(2020)
-                        .useGift(false)
-                        .build()
-        )
-                .retailerCredentials(new RetailerCredentials("test@test.fr", "password")) // TODO
-                .maxPrice(0) // TODO
-                .giftMessage("Here is your package") // TODO
-                .isGift(true)
-                .build()
-//        final Gson gson = new Gson()
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//        String jsonOutput = gson.toJson(someObject);
         def actual = gson.toJson(orderRequest)
-        println actual
-        assert "{\n" +
-                "  \"idempotency_key\": \"myIdempotencyKey\",\n" +
-                "  \"retailer\": \"amazon\",\n" +
-                "  \"products\": [\n" +
-                "    {\n" +
-                "      \"product_id\": \"0923568964\",\n" +
-                "      \"quantity\": 1\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"max_price\": 0,\n" +
-                "  \"shipping_address\": {\n" +
-                "    \"first_name\": \"John Hannibal\",\n" +
-                "    \"last_name\": \"Smith\",\n" +
-                "    \"address_line1\": \"1234 Main Street\",\n" +
-                "    \"address_line2\": \"above the bar\",\n" +
-                "    \"zip_code\": \"11907\",\n" +
-                "    \"city\": \"Brooklyn\",\n" +
-                "    \"state\": \"NY\",\n" +
-                "    \"country\": \"US\",\n" +
-                "    \"phone_number\": \"123-123-1234\"\n" +
-                "  },\n" +
-                "  \"is_gift\": true,\n" +
-                "  \"gift_message\": \"Here is your package\",\n" +
-                "  \"shipping_method\": \"cheapest\",\n" +
-                "  \"billing_address\": {\n" +
-                "    \"first_name\": \"John Hannibal\",\n" +
-                "    \"last_name\": \"Smith\",\n" +
-                "    \"address_line1\": \"1234 Main Street\",\n" +
-                "    \"address_line2\": \"above the bar\",\n" +
-                "    \"zip_code\": \"11907\",\n" +
-                "    \"city\": \"Brooklyn\",\n" +
-                "    \"state\": \"NY\",\n" +
-                "    \"country\": \"US\",\n" +
-                "    \"phone_number\": \"123-123-1234\"\n" +
-                "  },\n" +
-                "  \"payment_method\": {\n" +
-                "    \"expiration_month\": 12,\n" +
-                "    \"expiration_year\": 2020,\n" +
-                "    \"use_gift\": false\n" +
-                "  },\n" +
-                "  \"retailer_credentials\": {\n" +
-                "    \"email\": \"test@test.fr\",\n" +
-                "    \"password\": \"password\"\n" +
-                "  }\n" +
-                "}" == actual
+        final String expected = new String(Files.readAllBytes(Paths.get("./src/main/test/unit-resources/" +
+                "GsonUnitTest-serializeOrderRequest.json")));
+        assert StringUtils.isNotBlank(expected)
+
+        assert expected == actual
+    }
+
+    @Test
+    void 'serialize OrderRequest with AffiliateInfo'() {
+        orderRequest.affiliateInfo = new AffiliateInfo(tag: "Venator-Beta Delphini")
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        def actual = gson.toJson(orderRequest)
+        final String expected = new String(Files.readAllBytes(Paths.get("./src/main/test/unit-resources/" +
+                "GsonUnitTest-serializeOrderRequest-withAffiliateInfo.json")));
+        assert StringUtils.isNotBlank(expected)
+
+        assert expected == actual
+    }
+
+    @Test
+    void 'serialize OrderRequest with sellerSelectionCriteria'() {
+        orderRequest.products[0].sellerSelectionCriteria = new SellerSelectionCriteria(
+                conditionIn: [ZincCondition.New, ZincCondition.Used_Acceptable, ZincCondition.Used_Like_New],
+                handlingDaysMax: 6,
+                prime: true,
+                merchantIdNotIn: ["Shiliak-Beta Lyrae"],
+                minSellerNumRatings: 159
+        )
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        def actual = gson.toJson(orderRequest)
+        final String expected = new String(Files.readAllBytes(Paths.get("./src/main/test/unit-resources/" +
+                "GsonUnitTest-serializeOrderRequest-sellerSelectionCriteria.json")));
+        assert StringUtils.isNotBlank(expected)
+
+        assert expected == actual
     }
 
     @Test
@@ -168,7 +159,7 @@ class GsonUnitTest {
                 "}"
         def Gson gson = new Gson()
         def OrderRequest orderRequest = gson.fromJson(json, OrderRequest.class)
-        println ToStringBuilder.reflectionToString(orderRequest, ToStringStyle.MULTI_LINE_STYLE)
+//        println ToStringBuilder.reflectionToString(orderRequest, ToStringStyle.MULTI_LINE_STYLE)
         assert null != orderRequest
         assert SupportedRetailer.amazon != orderRequest.retailer
         assert 2300 == orderRequest.maxPrice
@@ -188,9 +179,9 @@ class GsonUnitTest {
                 ),
                 code: ZincErrorCode.invalid_payment_method,
                 message: "Sualocin-Alpha Delphini",
-                data: "{Rasalas: Mu Leonis}",
+                data: ["Rasalas": "Mu Leonis"],
                 createdAt: Date.parse(ZincConstants.jsonDateFormat, "2017-09-17T16:05:48.250Z"),
-                statusUpdates: [new ZincStatusUpdate(type: "statusUpdated", data: [hello: "world"], createdAt: Date.parse(ZincConstants.jsonDateFormat, "2017-09-17T16:08:54.250Z"))]
+                statusUpdates: [new ZincStatusUpdate(type: "status_updated", data: [hello: "world"], createdAt: Date.parse(ZincConstants.jsonDateFormat, "2017-09-17T16:08:54.250Z"))]
         )
         Gson gson = new GsonBuilder().setDateFormat(ZincConstants.jsonDateFormat).create();
         def expectedJson = "{" +
@@ -198,8 +189,8 @@ class GsonUnitTest {
                 "\"request\":{\"idempotency_key\":\"Torcularis Septentrionalis Omicron Piscium\",\"retailer\":\"amazon\",\"products\":[{\"product_id\":\"Sheddi-Delta Capricorni\",\"quantity\":159}],\"max_price\":0,\"shipping\":{\"order_by\":\"fasted\",\"maxDays\":21,\"maxPrice\":6543},\"webhooks\":{}}," +
                 "\"code\":\"invalid_payment_method\"," +
                 "\"message\":\"Sualocin-Alpha Delphini\"," +
-                "\"data\":\"{Rasalas: Mu Leonis}\",\"_created_at\":\"2017-09-17T16:05:48.250Z\"," +
-                "\"status_updates\":[{\"type\":\"statusUpdated\",\"data\":{\"hello\":\"world\"},\"_created_at\":\"2017-09-17T16:08:54.250Z\"}]" +
+                "\"data\":{\"Rasalas\":\"Mu Leonis\"},\"_created_at\":\"2017-09-17T16:05:48.250Z\"," +
+                "\"status_updates\":[{\"type\":\"status_updated\",\"data\":{\"hello\":\"world\"},\"_created_at\":\"2017-09-17T16:08:54.250Z\"}]" +
                 "}"
         assert expectedJson == gson.toJson(zincError)
 

@@ -3,12 +3,18 @@ package fr.sayasoft.zinc.sdk.api;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import fr.sayasoft.zinc.sdk.domain.OrderRequest;
 import fr.sayasoft.zinc.sdk.domain.OrderResponse;
+import fr.sayasoft.zinc.sdk.domain.ProductDetailsResponse;
+import fr.sayasoft.zinc.sdk.domain.ProductOfferResponse;
 import fr.sayasoft.zinc.sdk.domain.ZincConstants;
 import fr.sayasoft.zinc.sdk.domain.ZincError;
+import fr.sayasoft.zinc.sdk.enums.SupportedRetailer;
 import fr.sayasoft.zinc.sdk.exception.CannotGetOrderException;
+import fr.sayasoft.zinc.sdk.exception.CannotGetProductDetailsException;
+import fr.sayasoft.zinc.sdk.exception.CannotGetProductOfferException;
 import fr.sayasoft.zinc.sdk.exception.CannotPostOrderRequestException;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,17 +26,22 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.Serializable;
 import java.util.Map;
+
+import static fr.sayasoft.zinc.sdk.domain.ZincConstants.max_age;
+import static fr.sayasoft.zinc.sdk.domain.ZincConstants.newer_than;
 
 @Getter
 @Setter
 @ToString
 @Log4j
-public class ZincApi {
+public class ZincApi implements Serializable {
     public static final String DEFAULT_BASE_URL = "http://localhost:9090/v1/";
 
     private ZincHelper zincHelper = new ZincHelper();
@@ -44,9 +55,9 @@ public class ZincApi {
      */
     private transient String base64EncodedClientToken;
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private transient RestTemplate restTemplate = new RestTemplate();
 
-    private Gson gson = new GsonBuilder().setDateFormat(ZincConstants.jsonDateFormat).create();
+    private transient Gson gson = new GsonBuilder().setDateFormat(ZincConstants.jsonDateFormat).create();
 
     public ZincApi() {
         this(DEFAULT_BASE_URL);
@@ -71,7 +82,6 @@ public class ZincApi {
         final HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
-
             final ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
             if (response.getStatusCode().equals(HttpStatus.OK)) {
@@ -80,13 +90,11 @@ public class ZincApi {
             } else {
                 throw new CannotGetOrderException("Cannot get order, received HttpStatus: " + response.getStatusCode());
             }
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | JsonParseException e) {
             log.error("Could not get Order", e);
             throw new CannotGetOrderException(e);
         }
     }
-
-    // UNITTESTME
 
     /**
      * Posts an order to Zinc API.
@@ -117,14 +125,14 @@ public class ZincApi {
             final String responseBody = response.getBody();
             final Map<String, String> responseMap = gson.fromJson(responseBody, ZincConstants.TYPE_MAP_STRING_OBJECT);
 
-            final String type = responseMap.get(ZincConstants.type);
+            final String type = responseMap.get(ZincConstants._type);
             if (null != type && type.equalsIgnoreCase(ZincConstants.error)) {
                 final ZincError zincError;
                 try {
                     zincError = gson.fromJson(responseBody, ZincError.class);
                     throw new CannotPostOrderRequestException("Did not receive requestId but received ZincError", zincError);
                 } catch (JsonSyntaxException e) {
-                    throw new CannotPostOrderRequestException("Did not receive requestId and could not parse ZincError");
+                    throw new CannotPostOrderRequestException("Did not receive requestId and could not parse ZincError", e);
                 }
             }
 
@@ -137,6 +145,88 @@ public class ZincApi {
         } catch (RestClientException e) {
             log.error("Could not post OrderRequest", e);
             throw new CannotPostOrderRequestException(e);
+        }
+    }
+
+    // UNITTESTME
+    public ProductOfferResponse getProductOffer(SupportedRetailer supportedRetailer, String productId, Long maxAge, Long newerThan, Boolean async) throws CannotGetProductOfferException {
+        Assert.notNull(supportedRetailer, "supportedRetailer cannot be null");
+        Assert.notNull(productId, "productId cannot be null");
+        Assert.isTrue((null == maxAge) || (null == newerThan), "at least one parameter among: 'maxAge' and 'newerThan' must be null");
+
+        // Target URL: https://api.zinc.io/v1/products/0923568964/offers?retailer=amazon
+        StringBuilder stringBuilder = new StringBuilder(baseUrl + "products/" + productId + "/offers?retailer=" + supportedRetailer.name());
+        if ((null != maxAge) && (maxAge > 0L)) {
+            stringBuilder = stringBuilder.append(max_age + "=" + maxAge);
+        }
+        if ((null != newerThan) && (newerThan> 0L)) {
+            stringBuilder = stringBuilder.append(newer_than + "=" + newerThan);
+        }
+        if (null != async) {
+            stringBuilder = stringBuilder.append(async + "=" + async);
+        }
+
+        final String url = stringBuilder.toString();
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Basic " + base64EncodedClientToken);
+        headers.setContentType(MediaType.APPLICATION_JSON); // optional
+
+        final HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            final ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                final String responseBody = response.getBody();
+                return zincHelper.parseProductOfferResponse(responseBody);
+            } else {
+                throw new CannotGetProductOfferException("Cannot get product price, received HttpStatus: " + response.getStatusCode());
+            }
+        } catch (HttpClientErrorException | JsonParseException e) {
+            log.error("Could not get ProductOffer", e);
+            throw new CannotGetProductOfferException(e);
+        }
+    }
+
+    // UNITTESTME
+    public ProductDetailsResponse getProductDetails(SupportedRetailer supportedRetailer, String productId, Long maxAge, Long newerThan, Boolean async) throws CannotGetProductDetailsException {
+        Assert.notNull(supportedRetailer, "supportedRetailer cannot be null");
+        Assert.notNull(productId, "productId cannot be null");
+        Assert.isTrue((null == maxAge) || (null == newerThan), "at least one parameter among: 'maxAge' and 'newerThan' must be null");
+
+        // Target URL: https://api.zinc.io/v1/products/0923568964?retailer=amazon
+        StringBuilder stringBuilder = new StringBuilder(baseUrl + "products/" + productId + "?retailer=" + supportedRetailer.name());
+        if ((null != maxAge) && (maxAge > 0L)) {
+            stringBuilder = stringBuilder.append(max_age + "=" + maxAge);
+        }
+        if ((null != newerThan) && (newerThan> 0L)) {
+            stringBuilder = stringBuilder.append(newer_than + "=" + newerThan);
+        }
+        if (null != async) {
+            stringBuilder = stringBuilder.append(async + "=" + async);
+        }
+
+        final String url = stringBuilder.toString();
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Basic " + base64EncodedClientToken);
+        headers.setContentType(MediaType.APPLICATION_JSON); // optional
+
+        final HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            final ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                final String responseBody = response.getBody();
+                return zincHelper.parseProductDetailsResponse(responseBody);
+            } else {
+                throw new CannotGetProductDetailsException("Cannot get product details, received HttpStatus: " + response.getStatusCode());
+            }
+        } catch (HttpClientErrorException | JsonParseException e) {
+            log.error("Could not get ProductDetails", e);
+            throw new CannotGetProductDetailsException(e);
         }
     }
 }

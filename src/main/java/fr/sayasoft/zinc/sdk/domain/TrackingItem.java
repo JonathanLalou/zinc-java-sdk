@@ -19,19 +19,23 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrackingItem implements Serializable {
-    @SerializedName("obtained_at")
-    @JsonProperty("obtained_at")
-    Date obtainedAt;
+    @SerializedName(ZincConstants.productId)
+    @JsonProperty(ZincConstants.productId)
+    private String productId;
 
-    @SerializedName("merchant_order_id")
-    @JsonProperty("merchant_order_id")
+    @SerializedName(ZincConstants.obtainedAt)
+    @JsonProperty(ZincConstants.obtainedAt)
+    private Date obtainedAt;
+
+    @SerializedName(ZincConstants.merchantOrderId)
+    @JsonProperty(ZincConstants.merchantOrderId)
     private String merchantOrderId;
 
-    @SerializedName("carrier")
-    @JsonProperty("carrier")
+    @SerializedName(ZincConstants.carrier)
+    @JsonProperty(ZincConstants.carrier)
     private String carrier;
 
-    @SerializedName("tracking_number")
-    @JsonProperty("tracking_number")
+    @SerializedName(ZincConstants.trackingNumber)
+    @JsonProperty(ZincConstants.trackingNumber)
     private String trackingNumber;
 }

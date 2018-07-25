@@ -116,6 +116,7 @@ public class OrderRequest implements Serializable {
     /**
      * Any metadata to store on the request for future use. This object will be passed back in the response.
      */
+    @SuppressWarnings("squid:S1948")
     @SerializedName(ZincConstants.client_notes)
     @JsonProperty(ZincConstants.client_notes)
     private Object clientNotes;
@@ -151,5 +152,13 @@ public class OrderRequest implements Serializable {
     @SerializedName(ZincConstants.bundled)
     @JsonProperty(ZincConstants.bundled)
     private Boolean bundled;
+
+    // optional
+    /**
+     * (Amazon only).  Amazon Affiliate tag
+     */
+    @SerializedName(ZincConstants.affiliate_info)
+    @JsonProperty(ZincConstants.affiliate_info)
+    private AffiliateInfo affiliateInfo;
 
 }

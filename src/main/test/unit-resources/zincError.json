@@ -1,0 +1,79 @@
+{
+  "_type": "error",
+  "request": {
+    "idempotency_key": "e03db721",
+    "retailer": "amazon",
+    "max_price": 0,
+    "gift_message": "Here is your package",
+    "shipping_method": "cheapest",
+    "billing_address": {
+      "country": "France",
+      "state": "IdF",
+      "city": "Paris",
+      "zip_code": "75016",
+      "address_line2": "entree A12",
+      "address_line1": "45, rue des Champs Elysees",
+      "last_name": "World",
+      "first_name": "Hello"
+    },
+    "payment_method": {
+      "use_gift": false,
+      "expiration_year": 2018,
+      "expiration_month": 10,
+      "name_on_card": "hello world"
+    },
+    "retailer_credentials": {
+      "email": "hello.world@gmail.com"
+    },
+    "client_token": "ABCDEF123456789ABCDEF",
+    "auto_retry_settings": {
+      "retry_delays": [
+        0,
+        0
+      ]
+    },
+    "free_gifts": [],
+    "bundled_order_ids": [],
+    "webhooks": {
+      "request_failed": "http://6704fbb4.ngrok.io/hook/zinc?eventType=request_failed&uuid=e03db721",
+      "status_updated": "http://6704fbb4.ngrok.io/hook/zinc?eventType=status_updated&uuid=e03db721",
+      "request_succeeded": "http://6704fbb4.ngrok.io/hook/zinc?eventType=request_succeeded&uuid=e03db721",
+      "tracking_obtained": "http://6704fbb4.ngrok.io/hook/zinc?eventType=tracking_obtained&uuid=e03db721"
+    },
+    "promo_codes": [],
+    "products": [
+      {
+        "product_id": "B01MY7GHKJ",
+        "quantity": 1,
+        "variants": []
+      }
+    ],
+    "is_gift": true,
+    "shipping_address": {
+      "first_name": "Hello",
+      "last_name": "World",
+      "address_line1": "5th Avenue",
+      "address_line2": "",
+      "zip_code": "93000",
+      "city": "Manhattan",
+      "state": "NY",
+      "country": "US",
+      "phone_number": "+1-123-123-4567"
+    },
+    "_created_at": "2017-10-17T01:37:24.685Z"
+  },
+  "code": "account_locked_verification_required",
+  "message": "The retailer asked for a verification code to verify your account.",
+  "data": {
+    "verification_url": "https://www.amazon.com/ap/cvf/request?arb=d12462b7-f047-4aaf",
+    "text": "Verifying it's you\nFor your security, we need to verify your identity. We've sent a code to the email Nasser.Abdul@caramail.com. Please enter it below.\nEnter code\n\n\nContinue\nResend code",
+    "current_url": null
+  },
+  "host": "zincapi2",
+  "screenshot_urls": [
+    "https://zincapi.s3.amazonaws.com/438eafb2fc3ab29309a2_login_0.jpg",
+    "https://zincapi.s3.amazonaws.com/438eafb2fc3ab29309a2_expected_error_account_locked_verification_required_0.jpg"
+  ],
+  "offers_urls": [],
+  "request_id": "438eafb2fc3ab29309a2"
+}
