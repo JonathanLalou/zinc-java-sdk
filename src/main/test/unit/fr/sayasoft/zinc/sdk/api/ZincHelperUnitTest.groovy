@@ -105,8 +105,5 @@ class ZincHelperUnitTest {
         assert null != zincError
         assert null != zincError.data
         assert zincError.data instanceof Map
-//        zincError.data.each {key, value ->
-//            println "$key --> $value"
-//        }
     }
 }

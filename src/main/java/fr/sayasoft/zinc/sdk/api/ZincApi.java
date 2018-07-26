@@ -34,6 +34,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.Serializable;
 import java.util.Map;
 
+import static fr.sayasoft.zinc.sdk.domain.ZincConstants.async;
 import static fr.sayasoft.zinc.sdk.domain.ZincConstants.max_age;
 import static fr.sayasoft.zinc.sdk.domain.ZincConstants.newer_than;
 
@@ -149,7 +150,7 @@ public class ZincApi implements Serializable {
     }
 
     // UNITTESTME
-    public ProductOfferResponse getProductOffer(SupportedRetailer supportedRetailer, String productId, Long maxAge, Long newerThan, Boolean async) throws CannotGetProductOfferException {
+    public ProductOfferResponse getProductOffer(SupportedRetailer supportedRetailer, String productId, Long maxAge, Long newerThan, Boolean bAsync) throws CannotGetProductOfferException {
         Assert.notNull(supportedRetailer, "supportedRetailer cannot be null");
         Assert.notNull(productId, "productId cannot be null");
         Assert.isTrue((null == maxAge) || (null == newerThan), "at least one parameter among: 'maxAge' and 'newerThan' must be null");
@@ -157,13 +158,13 @@ public class ZincApi implements Serializable {
         // Target URL: https://api.zinc.io/v1/products/0923568964/offers?retailer=amazon
         StringBuilder stringBuilder = new StringBuilder(baseUrl + "products/" + productId + "/offers?retailer=" + supportedRetailer.name());
         if ((null != maxAge) && (maxAge > 0L)) {
-            stringBuilder = stringBuilder.append(max_age + "=" + maxAge);
+            stringBuilder = stringBuilder.append("&" + max_age + "=" + maxAge);
         }
         if ((null != newerThan) && (newerThan> 0L)) {
-            stringBuilder = stringBuilder.append(newer_than + "=" + newerThan);
+            stringBuilder = stringBuilder.append("&" + newer_than + "=" + newerThan);
         }
-        if (null != async) {
-            stringBuilder = stringBuilder.append(async + "=" + async);
+        if (null != bAsync) {
+            stringBuilder = stringBuilder.append("&" + async + "=" + bAsync);
         }
 
         final String url = stringBuilder.toString();
@@ -189,8 +190,8 @@ public class ZincApi implements Serializable {
         }
     }
 
-    // UNITTESTME
-    public ProductDetailsResponse getProductDetails(SupportedRetailer supportedRetailer, String productId, Long maxAge, Long newerThan, Boolean async) throws CannotGetProductDetailsException {
+
+    public ProductDetailsResponse getProductDetails(SupportedRetailer supportedRetailer, String productId, Long maxAge, Long newerThan, Boolean bAsync) throws CannotGetProductDetailsException {
         Assert.notNull(supportedRetailer, "supportedRetailer cannot be null");
         Assert.notNull(productId, "productId cannot be null");
         Assert.isTrue((null == maxAge) || (null == newerThan), "at least one parameter among: 'maxAge' and 'newerThan' must be null");
@@ -198,13 +199,13 @@ public class ZincApi implements Serializable {
         // Target URL: https://api.zinc.io/v1/products/0923568964?retailer=amazon
         StringBuilder stringBuilder = new StringBuilder(baseUrl + "products/" + productId + "?retailer=" + supportedRetailer.name());
         if ((null != maxAge) && (maxAge > 0L)) {
-            stringBuilder = stringBuilder.append(max_age + "=" + maxAge);
+            stringBuilder = stringBuilder.append("&" + max_age + "=" + maxAge);
         }
         if ((null != newerThan) && (newerThan> 0L)) {
-            stringBuilder = stringBuilder.append(newer_than + "=" + newerThan);
+            stringBuilder = stringBuilder.append("&" + newer_than + "=" + newerThan);
         }
-        if (null != async) {
-            stringBuilder = stringBuilder.append(async + "=" + async);
+        if (null != bAsync) {
+            stringBuilder = stringBuilder.append("&" + async + "=" + bAsync);
         }
 
         final String url = stringBuilder.toString();

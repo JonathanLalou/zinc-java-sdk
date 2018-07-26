@@ -33,7 +33,7 @@ class ZincApiRuntimeTest {
     @SuppressWarnings("UnnecessaryQualifiedReference")
     ZincApi zincApi = new ZincApi(
 //            "https://api.zinc.io/v1/",
-//            Base64.encodeBase64String("ABCDEFG".getBytes())
+//            org.apache.commons.codec.binary.Base64.encodeBase64String("ABCDEFG".getBytes())
     )
 
     OrderRequest orderRequest

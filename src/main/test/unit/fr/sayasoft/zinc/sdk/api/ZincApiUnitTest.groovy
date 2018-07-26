@@ -8,6 +8,7 @@ import fr.sayasoft.zinc.sdk.domain.ZincConstants
 import fr.sayasoft.zinc.sdk.domain.ZincError
 import fr.sayasoft.zinc.sdk.domain.ZincStatusUpdate
 import fr.sayasoft.zinc.sdk.enums.ShippingMethod
+import fr.sayasoft.zinc.sdk.enums.SupportedRetailer
 import fr.sayasoft.zinc.sdk.enums.ZincErrorCode
 import fr.sayasoft.zinc.sdk.exception.CannotGetOrderException
 import fr.sayasoft.zinc.sdk.exception.CannotPostOrderRequestException
@@ -27,6 +28,9 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
+
+import java.nio.file.Files
+import java.nio.file.Paths
 
 import static org.easymock.EasyMock.expect
 import static org.easymock.EasyMock.replay
@@ -57,7 +61,7 @@ class ZincApiUnitTest {
         headers = new HttpHeaders()
         headers.set("Authorization", "Basic $baseEncodedClientToken")
         headers.setContentType(MediaType.APPLICATION_JSON)
-        this.entity = new HttpEntity<>(headers);
+        this.entity = new HttpEntity<>(headers)
     }
 
     private replayAll() {
@@ -111,7 +115,7 @@ class ZincApiUnitTest {
         def url = "http://Rukbat-Alpha-Sagittarii/orders"
         def data = "{\"idempotency_key\":\"Zubra-Delta Leonis\",\"max_price\":0,\"shipping_method\":\"cheapest\",\"webhooks\":{}}"
 
-        entity = new HttpEntity<>(data, headers);
+        entity = new HttpEntity<>(data, headers)
 
         expect(restTemplate.exchange(url, HttpMethod.POST, entity, String.class)).andThrow(new HttpClientErrorException(FORBIDDEN))
 
@@ -149,7 +153,7 @@ class ZincApiUnitTest {
                 "\"status_updates\":[{\"type\":\"status_updated\",\"data\":{\"hello\":\"world\"},\"_created_at\":\"2017-09-17T16:08:54.250Z\"}]" +
                 "}"
 
-        entity = new HttpEntity<>(data, headers);
+        entity = new HttpEntity<>(data, headers)
         def responseEntity = new ResponseEntity<String>(expectedJson, OK)
         expect(restTemplate.exchange(url, HttpMethod.POST, entity, String.class)).andReturn(responseEntity)
 
@@ -176,7 +180,7 @@ class ZincApiUnitTest {
         def requestId = "Phact-Alpha-Columbae"
         def responseEntity = new ResponseEntity<String>("{request_id: \"\"}", OK)
 
-        entity = new HttpEntity<>(data, headers);
+        entity = new HttpEntity<>(data, headers)
         expect(restTemplate.exchange(url, HttpMethod.POST, entity, String.class)).andReturn(responseEntity)
 
         replayAll()
@@ -205,4 +209,28 @@ class ZincApiUnitTest {
         verifyAll()
     }
 
+    @Test
+    void getProductDetails() {
+        // don't mock helper for this test (reproduces spotted a bug IRL)
+        zincApi.zincHelper = new ZincHelper()
+        def productId = "B00KFP6NHO", supportedRetailer = SupportedRetailer.amazon
+        def json = new String(Files.readAllBytes(Paths.get("./src/main/test/unit-resources/" +
+            "ZincApiUnitTest-getProductDetails.json")))
+
+        def url = "${baseUrl}products/${productId}?retailer=${supportedRetailer.name()}&async=false"
+        def responseEntity = new ResponseEntity<String>(json, OK)
+
+        entity = new HttpEntity<>(headers)
+        expect(restTemplate.exchange(url, HttpMethod.GET, entity, String.class)).andReturn(responseEntity)
+
+        replayAll()
+        def actual = zincApi.getProductDetails(supportedRetailer, productId, null, null, false)
+        verifyAll()
+        assert null != actual
+        assert "completed" == actual.status
+        assert productId == actual.productId
+        assert "1515775557" == actual.timestamp
+        assert "Nuby Garden Fresh Fruitsicle Frozen Pop Tray" == actual.title
+        assert "Nuby" == actual.brand
+    }
 }
